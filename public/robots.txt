@@ -25,4 +25,4 @@ User-agent: Applebot
 Allow: /
 
 # NOTE: replace XX.com with the real domain before deploying.
-Sitemap: https://XX.com/sitemap.xml
+Sitemap: https://index-z.pages.dev/sitemap.xml
