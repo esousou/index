@@ -71,7 +71,7 @@ export function applySeo(input: SeoInput) {
 
   upsertLink("canonical", canonical);
 
-  upsertMeta('meta[property="og:site_name"]', { property: "og:site_name", content: "index." });
+  upsertMeta('meta[property="og:site_name"]', { property: "og:site_name", content: "index-z." });
   upsertMeta('meta[property="og:type"]', { property: "og:type", content: type });
   upsertMeta('meta[property="og:title"]', { property: "og:title", content: title });
   upsertMeta('meta[property="og:description"]', { property: "og:description", content: description });
