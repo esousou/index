@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>index.</title>
+    <style>
+      html { background: #efe8de; color: #46463e; }
+      @media (prefers-color-scheme: dark) { html { background: #1d1f1d; color: #ddd6c9; } }
+      body { margin: 0; min-height: 100vh; display: grid; place-items: center;
+        font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", Georgia, serif;
+        letter-spacing: 0.02em; }
+      a { color: inherit; }
+    </style>
+    <script>
+      /*
+        A visitor opened XX.com/url?url=YY.net on a host with no SPA fallback.
+        Carry the query over to the one real document, XX.com/?url=YY.net, which
+        renders the same destination page.
+      */
+      (function () {
+        try {
+          var segments = window.location.pathname.split("/").filter(Boolean);
+          if (segments.length && segments[segments.length - 1] === "url") segments.pop();
+          var dir = "/" + (segments.length ? segments.join("/") + "/" : "");
+          window.location.replace(dir + (window.location.search || ""));
+        } catch (e) {
+          window.location.replace("/" + (window.location.search || ""));
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <p>Redirecting to <a href="/">index.</a></p>
+  </body>
+</html>
