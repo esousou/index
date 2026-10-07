@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  index. — links live only in visitors' memory and expire after 24 hours, so
+  index-z. — links live only in visitors' memory and expire after 24 hours, so
   there is no stable list of them to publish here. The root document is the
   crawlable directory: every live link is a real <a href="/?url=..."> on it, and
   the head carries matching hreflang alternates and JSON-LD at runtime.
-
-  Replace XX.com with the real domain before deploying.
 -->
 <urlset
   xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
@@ -21,6 +19,6 @@
     <xhtml:link rel="alternate" hreflang="ja" href="https://index-z.pages.dev/?lang=ja" />
     <xhtml:link rel="alternate" hreflang="es" href="https://index-z.pages.dev/?lang=es" />
     <xhtml:link rel="alternate" hreflang="fr" href="https://index-z.pages.dev/?lang=fr" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="index-z.pages.dev/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://index-z.pages.dev/" />
   </url>
 </urlset>
