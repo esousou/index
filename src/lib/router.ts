@@ -93,7 +93,7 @@ export function appRootPath() {
   return rootOf(visibleAddress().pathname);
 }
 
-/** The public root of the site as the visitor sees it, e.g. https://XX.ZZ.com/ */
+/** The public root of the site as the visitor sees it, e.g. https://index-z.pages.dev/ */
 export function publicBase() {
   const a = visibleAddress();
   return `${a.origin}${rootOf(a.pathname)}`;
@@ -201,7 +201,7 @@ function buildUrl(params: Record<string, string>) {
   return `${publicBase()}${qs ? `?${qs}` : ""}`;
 }
 
-/** https://XX.ZZ.com/?url=YY.net — absolute, so it is right from any frame. */
+/** https://index-z.pages.dev/?url=YY.net — absolute, so it is right from any frame. */
 export function routeToLink(target: string) {
   return buildUrl({ [URL_PARAM]: stripScheme(target) });
 }
@@ -258,7 +258,7 @@ function safeDecode(value: string) {
   }
 }
 
-/** XX.com/YY.net typed into the bar → rewrite to XX.com/?url=YY.net in place. */
+/** index-z.pages.dev/YY.net typed into the bar → rewrite to index-z.pages.dev/?url=YY.net in place. */
 function rescueLegacyPath(): string | null {
   const path = visibleAddress().pathname;
   const segs = path.split("/").filter(Boolean);
@@ -351,7 +351,7 @@ export function externalTarget(): "_blank" | "_top" {
  * public URL (crawlable, middle-clickable, copyable).
  *   • Not framed / same-origin frame → no reload: the bar is rewritten in place.
  *   • Cross-origin frame → target="_top" lets the browser take the WHOLE window
- *     to XX.ZZ.com/?url=YY.net (a frame cannot rewrite a foreign parent's bar).
+ *     to index-z.pages.dev/?url=YY.net (a frame cannot rewrite a foreign parent's bar).
  *     The view is also updated inside the frame in case top navigation is
  *     blocked by a sandbox, so the click never appears to do nothing.
  */
