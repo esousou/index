@@ -147,7 +147,7 @@ export function Header({
         <a
           {...internalLink(homeUrl())}
           className="text-ink transition-opacity hover:opacity-70"
-          aria-label="index."
+          aria-label="index-z."
         >
           <Logo />
         </a>
