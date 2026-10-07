@@ -12,15 +12,15 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml"
 >
   <url>
-    <loc>https://XX.com/</loc>
+    <loc>https://index-z.pages.dev/</loc>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://XX.com/?lang=en" />
-    <xhtml:link rel="alternate" hreflang="zh" href="https://XX.com/?lang=zh" />
-    <xhtml:link rel="alternate" hreflang="ko" href="https://XX.com/?lang=ko" />
-    <xhtml:link rel="alternate" hreflang="ja" href="https://XX.com/?lang=ja" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://XX.com/?lang=es" />
-    <xhtml:link rel="alternate" hreflang="fr" href="https://XX.com/?lang=fr" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://XX.com/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://index-z.pages.dev/?lang=en" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://index-z.pages.dev/?lang=zh" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://index-z.pages.dev/?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://index-z.pages.dev/?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://index-z.pages.dev/?lang=es" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://index-z.pages.dev/?lang=fr" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="index-z.pages.dev/" />
   </url>
 </urlset>
