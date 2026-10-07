@@ -1,4 +1,4 @@
-# index-z — everything here is public and meant to be crawled.
+# index-z. — everything here is public and meant to be crawled.
 # Query-string addresses (/?url=example.com) are real destination pages,
 # not duplicates, so they are explicitly allowed.
 
@@ -8,7 +8,7 @@ Allow: /?url=
 Allow: /*?url=
 Disallow:
 
-# Replacement / rewrite bots are welcome too.
+# Search engine bots are welcome.
 User-agent: Googlebot
 Allow: /
 
@@ -24,5 +24,4 @@ Allow: /
 User-agent: Applebot
 Allow: /
 
-# NOTE: replace XX.com with the real domain before deploying.
 Sitemap: https://index-z.pages.dev/sitemap.xml
