@@ -45,7 +45,7 @@ function HomeLink({ label }: { label: string }) {
 }
 
 /**
- * The page living at XX.com/?url=YY.net
+ * The page living at index-z.pages.dev/?url=YY.net
  * Nothing is forwarded automatically: the visitor must follow the
  * https://YY.net anchor below to reach the destination.
  */
@@ -252,7 +252,7 @@ export function HelpSheet({ open, onClose, t }: { open: boolean; onClose: () => 
           <div>
             <span className="flex items-center gap-2 text-sage">
               <IconQuestion size={14} />
-              <Micro className="text-sage">index.</Micro>
+              <Micro className="text-sage">index-z.</Micro>
             </span>
             <h2 className="mt-2 font-display text-3xl leading-tight sm:text-4xl">{t("help.title")}</h2>
             <p className="mt-1 text-xs text-ink-faint">{t("help.sub")}</p>
