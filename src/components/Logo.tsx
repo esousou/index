@@ -11,7 +11,7 @@ export function Logo({ className, wordmark = true }: LogoProps) {
       <svg
         viewBox="0 0 48 34"
         role="img"
-        aria-label="index."
+        aria-label="index-z."
         style={{ width: "2.6rem", height: "auto", overflow: "visible" }}
       >
         <g fill="none" stroke="currentColor" strokeLinecap="round">
@@ -39,7 +39,7 @@ export function Logo({ className, wordmark = true }: LogoProps) {
         <circle cx="24" cy="31.5" r="1.3" fill="currentColor" />
       </svg>
       {wordmark ? (
-        <span className="font-display text-[2.05rem] leading-none tracking-[-0.01em]">index.</span>
+        <span className="font-display text-[2.05rem] leading-none tracking-[-0.01em]">index-z.</span>
       ) : null}
     </span>
   );
