@@ -1,4 +1,4 @@
-# index. — everything here is public and meant to be crawled.
+# index-z — everything here is public and meant to be crawled.
 # Query-string addresses (/?url=example.com) are real destination pages,
 # not duplicates, so they are explicitly allowed.
 
