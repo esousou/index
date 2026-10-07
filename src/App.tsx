@@ -98,7 +98,7 @@ export default function App() {
     if (route.name === "go") {
       const record = linkStore.byUrl(route.href);
       applySeo({
-        title: `${route.href} — index.`,
+        title: `${route.href} — index-z.`,
         description: record?.title ?? t("go.safety"),
         canonical,
         lang,
@@ -110,13 +110,13 @@ export default function App() {
             url: canonical,
             description: record?.title ?? undefined,
             inLanguage: lang,
-            isPartOf: { "@type": "WebSite", name: "index.", url: `${origin}/` },
+            isPartOf: { "@type": "WebSite", name: "index-z.", url: `${origin}/` },
           },
           {
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
             itemListElement: [
-              { "@type": "ListItem", position: 1, name: "index.", item: `${origin}/` },
+              { "@type": "ListItem", position: 1, name: "index-z.", item: `${origin}/` },
               { "@type": "ListItem", position: 2, name: stripScheme(route.href), item: canonical },
             ],
           },
@@ -127,7 +127,7 @@ export default function App() {
 
     if (route.name === "error") {
       applySeo({
-        title: `${t("go.errTitle")} — index.`,
+        title: `${t("go.errTitle")} — index-z.`,
         description: t("go.errBody", { q: route.value }),
         canonical,
         lang,
@@ -144,7 +144,7 @@ export default function App() {
     }));
 
     applySeo({
-      title: `index. — ${t("app.tagline")}`,
+      title: `index-z. — ${t("app.tagline")}`,
       description: t("hero.sub"),
       canonical,
       lang,
@@ -152,13 +152,13 @@ export default function App() {
         {
           "@context": "https://schema.org",
           "@type": "WebSite",
-          name: "index.",
+          name: "index-z.",
           url: `${origin}/`,
           description: t("hero.sub"),
           inLanguage: LANGS.map((l) => l.code),
         },
         items.length > 0
-          ? { "@context": "https://schema.org", "@type": "ItemList", name: "index.", itemListElement: items }
+          ? { "@context": "https://schema.org", "@type": "ItemList", name: "index-z.", itemListElement: items }
           : null,
       ].filter(Boolean),
     });
@@ -607,7 +607,7 @@ export default function App() {
 
       {/* keeps a crawlable, real anchor back to the root document */}
       <a href={homeHref} className="sr-only">
-        index.
+        index-z.
       </a>
     </div>
   );
