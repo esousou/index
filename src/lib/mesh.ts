@@ -3,7 +3,7 @@ import type { DataConnection } from "peerjs";
 import type { LinkRecord } from "./links";
 import { SHARD_COUNT } from "./crypto";
 
-const SLOT_BASE = "indexdot-commons-";
+const SLOT_BASE = "index-z-commons-";
 const SLOT_MAX = 9;
 const SLOT_KEY = "index.slot.v1";
 
