@@ -13,6 +13,8 @@ export interface LinkRecord {
   author: string; // short wallet signature
   lang: string;
   expiresAt: number; // 24 hours from creation
+  /** Tombstone: the author removed it. Wins every merge until expiresAt. */
+  removed?: boolean;
 }
 
 export type NormResult =
@@ -41,9 +43,22 @@ export function normalizeLink(raw: string): NormResult {
   if (host.length < 3) return { ok: false, reason: "bad" };
 
   parsed.hash = "";
+  // Drop trailing slashes on the path so the stored address is exactly the one
+  // the ?url= route reconstructs (https://a.com/x/ and https://a.com/x are one link).
+  parsed.pathname = parsed.pathname.replace(/\/+$/, "") || "/";
   const href = parsed.toString();
   if (href.length > 512) return { ok: false, reason: "bad" };
   return { ok: true, href, host, cost: priceOf(href) };
+}
+
+/** Identity of a link, shared by the store, the route and the destination page. */
+export function linkKey(url: string): string {
+  return stripScheme(url).toLowerCase();
+}
+
+/** Ownership is decided by the author's signature, never by a shared flag. */
+export function isOwn(link: LinkRecord, me: string): boolean {
+  return link.author === me;
 }
 
 /**
@@ -108,8 +123,9 @@ export function mergeLink(a: LinkRecord, b: LinkRecord): LinkRecord {
     opens: Math.max(a.opens, b.opens),
     rev: Math.max(a.rev, b.rev),
     title: newer.title || older.title,
-    origin: a.origin === "you" || b.origin === "you" ? "you" : newer.origin,
     expiresAt: Math.max(a.expiresAt, b.expiresAt),
+    // A removal is final: once any copy says "removed", no merge revives it.
+    removed: Boolean(a.removed || b.removed),
   };
 }
 
