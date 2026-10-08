@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { relativeTime, renewCost, stripScheme, type LinkRecord } from "../lib/links";
+import { isOwn, relativeTime, renewCost, stripScheme, type LinkRecord } from "../lib/links";
 import { internalLink, prettyRoute, routeToLink } from "../lib/router";
 import type { LangCode, T } from "../i18n";
 import { Micro } from "./Chrome";
@@ -78,6 +78,7 @@ function Row({
   now,
   rank,
   index,
+  me,
   t,
   lang,
   balance,
@@ -89,6 +90,7 @@ function Row({
   now: number;
   rank?: number;
   index: number;
+  me: string;
   t: T;
   lang: LangCode;
   balance: number;
@@ -96,7 +98,7 @@ function Row({
   onCopied: () => void;
   onRenew: (link: LinkRecord) => void;
 }) {
-  const own = link.origin === "you";
+  const own = isOwn(link, me);
   const fmt = new Intl.NumberFormat(lang);
   const href = routeToLink(link.url);
   const ratio = lifeLeft(link, now);
@@ -253,6 +255,7 @@ export function LinkColumns({
   t,
   lang,
   all,
+  me,
   balance,
   onRemove,
   onCopied,
@@ -262,6 +265,7 @@ export function LinkColumns({
   t: T;
   lang: LangCode;
   all: LinkRecord[];
+  me: string;
   balance: number;
   onRemove: (id: string) => void;
   onCopied: () => void;
@@ -352,6 +356,7 @@ export function LinkColumns({
                     link={l}
                     now={now}
                     index={i}
+                    me={me}
                     t={t}
                     lang={lang}
                     balance={balance}
@@ -377,6 +382,7 @@ export function LinkColumns({
                     now={now}
                     index={i}
                     rank={i + 1}
+                    me={me}
                     t={t}
                     lang={lang}
                     balance={balance}
