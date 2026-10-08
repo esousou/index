@@ -96,7 +96,7 @@ export function GoPage({
           rel="noopener noreferrer nofollow"
           className="group mt-5 block break-words font-display text-[clamp(1.7rem,6.4vw,4rem)] leading-[1.08] text-ink transition-opacity duration-500 hover:opacity-70"
         >
-          <span className="text-ink-faint">https://</span>
+          <span className="text-ink-faint">{href.startsWith("http://") ? "http://" : "https://"}</span>
           <span className="underline decoration-sage decoration-1 underline-offset-[0.16em]">
             {host}
           </span>
