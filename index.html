@@ -8,27 +8,23 @@
     <title>index-z. — a quiet commons for links</title>
     <meta
       name="description"
-      content="index. is a peer-to-peer link directory. Share an address, pay for it in characters, and it lives only in the memory of visitors until it expires after 24 hours. No database, no account."
+      content="index-z. is a peer-to-peer link directory. Share an address, pay for it in characters, and it lives only in the memory of visitors until it expires after 24 hours. No database, no account."
     />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
-    <link rel="canonical" href="https://index-z.com" />
-    
-    <!-- Google Site Verification タグを追加 -->
-    <meta name="google-site-verification" content="tgRb3wQTqsKb79eoSZt4DTt-ggcg_d4HoLQf0slL_cM" />
-
-    <link rel="icon" type="image/png" href="/favicon32.png" sizes="32x32" />
-    <link rel="icon" type="image/png" href="/favicon.png" sizes="48x48" />
-    <link rel="apple-touch-icon" href="/favicon180.png" sizes="180x180" />
-
-    <meta property="og:site_name" content="index." />
+    <link rel="canonical" href="https://index-z.pages.dev/" />
+<meta name="google-site-verification" content="tgRb3wQTqsKb79eoSZt4DTt-ggcg_d4HoLQf0slL_cM" />	
+<link rel="icon" type="image/png" href="/favicon32.png" sizes="32x32" />	
+<link rel="icon" type="image/png" href="/favicon.png" sizes="48x48" />	
+<link rel="apple-touch-icon" href="/favicon180.png" sizes="180x180" />
+    <meta property="og:site_name" content="index-z." />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="index. — a quiet commons for links" />
+    <meta property="og:title" content="index-z. — a quiet commons for links" />
     <meta
       property="og:description"
       content="A peer-to-peer link directory. Links live only in the memory of visitors and expire after 24 hours."
     />
-    <meta property="og:url" content="https://index-z.pages.dev" />
+    <meta property="og:url" content="https://index-z.pages.dev/" />
     <meta property="og:locale" content="en_US" />
     <meta property="og:locale:alternate" content="zh_CN" />
     <meta property="og:locale:alternate" content="ko_KR" />
@@ -37,24 +33,24 @@
     <meta property="og:locale:alternate" content="fr_FR" />
 
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="index-z — a quiet commons for links" />
+    <meta name="twitter:title" content="index-z. — a quiet commons for links" />
     <meta
       name="twitter:description"
       content="A peer-to-peer link directory. Links live only in the memory of visitors and expire after 24 hours."
     />
 
-    <link rel="alternate" hreflang="en" href="https://index-z.pages.dev?lang=en" />
-    <link rel="alternate" hreflang="zh" href="https://index-z.pages.dev?lang=zh" />
-    <link rel="alternate" hreflang="ko" href="https://index-z.pages.dev?lang=ko" />
-    <link rel="alternate" hreflang="ja" href="https://index-z.pages.dev?lang=ja" />
-    <link rel="alternate" hreflang="es" href="https://index-z.pages.dev?lang=es" />
-    <link rel="alternate" hreflang="fr" href="https://index-z.pages.dev?lang=fr" />
-    <link rel="alternate" hreflang="x-default" href="https://index-z.pages.dev" />
+    <link rel="alternate" hreflang="en" href="https://index-z.pages.dev/?lang=en" />
+    <link rel="alternate" hreflang="zh" href="https://index-z.pages.dev/?lang=zh" />
+    <link rel="alternate" hreflang="ko" href="https://index-z.pages.dev/?lang=ko" />
+    <link rel="alternate" hreflang="ja" href="https://index-z.pages.dev/?lang=ja" />
+    <link rel="alternate" hreflang="es" href="https://index-z.pages.dev/?lang=es" />
+    <link rel="alternate" hreflang="fr" href="https://index-z.pages.dev/?lang=fr" />
+    <link rel="alternate" hreflang="x-default" href="https://index-z.pages.dev/" />
 
-    <link rel="preconnect" href="https://googleapis.com" />
-    <link rel="preconnect" href="https://gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;600&family=Noto+Serif+KR:wght@300;400;500&family=Noto+Serif+SC:wght@300;400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;600&family=Noto+Serif+KR:wght@300;400;500&family=Noto+Serif+SC:wght@300;400;500&display=swap"
       rel="stylesheet"
     />
 
@@ -62,8 +58,8 @@
       {
         "@context": "https://schema.org",
         "@type": "WebSite",
-        "name": "index.",
-        "url": "https://index-z.pages.dev",
+        "name": "index-z.",
+        "url": "https://index-z.pages.dev/",
         "description": "A peer-to-peer link directory. Links live only in the memory of visitors and expire after 24 hours.",
         "inLanguage": ["en", "zh", "ko", "ja", "es", "fr"]
       }
@@ -87,6 +83,24 @@
         } catch (e) {}
       })();
     </script>
+    <script>
+      // Keep the canonical honest before the app mounts: a destination page
+      // (/?url=YY.net) is its own page, not a duplicate of the home page.
+      (function () {
+        try {
+          var canonical = document.querySelector('link[rel="canonical"]');
+          var ogUrl = document.querySelector('meta[property="og:url"]');
+          var href = location.origin + "/";
+          var target = new URLSearchParams(location.search).get("url");
+          if (target) {
+            var bare = target.replace(/^https?:\/\//i, "").replace(/\/$/, "");
+            if (/\./.test(bare)) href = location.origin + "/?url=" + encodeURIComponent(bare);
+          }
+          if (canonical) canonical.setAttribute("href", href);
+          if (ogUrl) ogUrl.setAttribute("content", href);
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
@@ -101,7 +115,7 @@
           line-height: 1.7;
         "
       >
-        <h1 style="font-size: 2.4rem; font-weight: 400; margin: 0 0 0.4rem">index.</h1>
+        <h1 style="font-size: 2.4rem; font-weight: 400; margin: 0 0 0.4rem">index-z.</h1>
         <p style="opacity: 0.7; margin: 0 0 2rem">a quiet commons for links</p>
         <p>
           index-z. is a peer-to-peer link directory. Visitors publish web addresses to it, and those
@@ -119,7 +133,7 @@
           over WebRTC — requires JavaScript.
         </p>
         <p>
-          <a href="/">Return to index.</a>
+          <a href="/">Return to index-z.</a>
         </p>
       </div>
     </noscript>
