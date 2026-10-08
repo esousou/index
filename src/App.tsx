@@ -6,8 +6,9 @@ import { ErrorPage, GoPage, HelpSheet } from "./components/Pages";
 import { IconCoin, IconHourglass, IconLink, IconUsers } from "./components/Icons";
 import { detectLang, LANGS, translate, type Key, type LangCode } from "./i18n";
 import {
+  isOwn,
+  linkKey,
   makeLink,
-  normalizeLink,
   renewCost,
   RENEW_MS,
   stripScheme,
@@ -73,6 +74,8 @@ export default function App() {
   const busRef = useRef<BroadcastChannel | null>(null);
   const tick = useRef(0);
   const langTouched = useRef(false);
+  /* This visitor's author signature: the only thing that makes a link "yours". */
+  const me = useMemo(() => wallet.signature(), []);
 
   /* ---------- language ---------- */
   useEffect(() => {
@@ -255,10 +258,7 @@ export default function App() {
   /* ---------- sweep links past their 24 hour life ---------- */
   useEffect(() => {
     const sweep = () => {
-      const now = Date.now();
-      for (const link of linkStore.getSnapshot().all) {
-        if (now > link.expiresAt) linkStore.remove(link.id);
-      }
+      linkStore.sweep();
     };
     const id = window.setInterval(sweep, 30_000);
     return () => window.clearInterval(id);
@@ -355,7 +355,7 @@ export default function App() {
   // After a full-page arrival (e.g. top-level navigation from a frame) the ledger
   // is empty until peers sync, so wait for the record to exist before counting.
   const goKnown =
-    route.name === "go" && snapshot.all.some((l) => l.url === route.href);
+    route.name === "go" && snapshot.all.some((l) => linkKey(l.url) === linkKey(route.href));
 
   useEffect(() => {
     if (route.name !== "go" || !goKnown) return;
@@ -396,16 +396,21 @@ export default function App() {
     [lang, push, t],
   );
 
+  /* Only the author can take a link down. The removal is broadcast as a tombstone
+     so peers cannot hand the live copy back, and the fee is refunded once. */
   const handleRemove = useCallback(
     (id: string) => {
       const link = linkStore.get(id);
-      if (!link) return;
-      const norm = normalizeLink(link.url);
-      linkStore.remove(id);
-      if (norm.ok) wallet.refund(norm.cost);
-      push(t("toast.removed", { n: norm.ok ? norm.cost : 0 }));
+      if (!link || !isOwn(link, me)) return;
+      const fee = renewCost(link.url);
+      const tomb = linkStore.remove(id);
+      if (!tomb) return;
+      meshRef.current?.broadcastLink(tomb);
+      busRef.current?.postMessage({ t: "link", link: tomb });
+      wallet.refund(fee);
+      push(t("toast.removed", { n: fee }));
     },
-    [push, t],
+    [me, push, t],
   );
 
   /* Renewing one link: +24 h for the same fee it cost to publish. */
@@ -476,7 +481,10 @@ export default function App() {
     [snapshot.all],
   );
 
-  const goRecord = route.name === "go" ? snapshot.all.find((l) => l.url === route.href) : undefined;
+  const goRecord =
+    route.name === "go"
+      ? snapshot.all.find((l) => linkKey(l.url) === linkKey(route.href))
+      : undefined;
 
   const homeHref = homeUrl();
 
@@ -566,6 +574,7 @@ export default function App() {
               t={t}
               lang={lang}
               all={snapshot.all}
+              me={me}
               onRemove={handleRemove}
               balance={w.balance}
               onCopied={() => push(t("toast.copied"))}
