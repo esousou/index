@@ -14,16 +14,27 @@
     </style>
     <script>
       /*
-        A visitor opened index-z.pages.dev/url?url=YY.net on a host with no SPA fallback.
-        Carry the query over to the one real document, index-z.pages.dev/?url=YY.net, which
-        renders the same destination page.
+        Legacy alias: index-z.pages.dev/url?url=YY.net (or /url/YY.net/path).
+        Carry the whole destination over to the app; the router puts the address
+        back into its path form, /YY.net/path.
       */
       (function () {
         try {
           var segments = window.location.pathname.split("/").filter(Boolean);
-          if (segments.length && segments[segments.length - 1] === "url") segments.pop();
-          var dir = "/" + (segments.length ? segments.join("/") + "/" : "");
-          window.location.replace(dir + (window.location.search || ""));
+          if (segments.length && segments[0] === "url") segments.shift();
+          var search = new URLSearchParams(window.location.search);
+          var target = search.get("url") || decodeURIComponent(segments.join("/"));
+          var lang = search.get("lang");
+
+          if (!target) {
+            window.location.replace("/" + (lang ? "?lang=" + encodeURIComponent(lang) : ""));
+            return;
+          }
+
+          target = target.replace(/^https?:\/\//i, "").replace(/\/+$/, "");
+          search.set("url", target);
+          if (lang) search.set("lang", lang);
+          window.location.replace("/?" + search.toString());
         } catch (e) {
           window.location.replace("/" + (window.location.search || ""));
         }
