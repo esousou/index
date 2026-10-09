@@ -112,7 +112,17 @@
           
           if (target) {
             var bare = target.replace(/^https?:\/\//i, "").replace(/\/$/, "");
-            if (/\./.test(bare)) href = location.origin + "/" + encodeURIComponent(bare);
+            if (/\./.test(bare)) {
+              // Encode each path segment, never the separators.
+              var routePath = bare
+                .split("/")
+                .filter(Boolean)
+                .map(function (part) {
+                  return encodeURIComponent(part);
+                })
+                .join("/");
+              href = location.origin + "/" + routePath;
+            }
           }
           
           if (canonical) canonical.setAttribute("href", href);
