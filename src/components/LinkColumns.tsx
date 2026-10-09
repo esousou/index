@@ -9,6 +9,7 @@ import {
   IconCopy,
   IconEye,
   IconFlame,
+  IconGlobe,
   IconHourglass,
   IconLink,
   IconPlus,
@@ -370,7 +371,19 @@ export function LinkColumns({
           </div>
 
           <div className="lg:pl-8">
-            <ColumnHead icon={<IconFlame size={18} />} title={t("col.top")} count={top.length} />
+            <ColumnHead
+              icon={
+                <span className="relative">
+                  <IconFlame size={18} />
+                  <IconGlobe
+                    size={8}
+                    className="absolute -bottom-0.5 -right-1 text-sage"
+                  />
+                </span>
+              }
+              title={t("col.top")}
+              count={top.length}
+            />
             <ul className="lg:max-h-[62vh] lg:overflow-y-auto lg:pr-2">
               {top.length === 0 ? (
                 <Empty text={needle ? t("col.empty.filtered", { q }) : t("col.empty.top")} />
