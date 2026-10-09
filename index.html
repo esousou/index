@@ -13,9 +13,9 @@
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <link rel="canonical" href="https://index-z.pages.dev/" />
-<meta name="google-site-verification" content="tgRb3wQTqsKb79eoSZt4DTt-ggcg_d4HoLQf0slL_cM" />	
-<link rel="icon" type="image/png" href="/favicon32.png" sizes="32x32" />	
-<link rel="icon" type="image/png" href="/favicon.png" sizes="48x48" />	
+<meta name="google-site-verification" content="tgRb3wQTqsKb79eoSZt4DTt-ggcg_d4HoLQf0slL_cM" />
+<link rel="icon" type="image/png" href="/favicon32.png" sizes="32x32" />
+<link rel="icon" type="image/png" href="/favicon.png" sizes="48x48" />
 <link rel="apple-touch-icon" href="/favicon180.png" sizes="180x180" />
     <meta property="og:site_name" content="index-z." />
     <meta property="og:type" content="website" />
@@ -85,17 +85,31 @@
     </script>
     <script>
       // Keep the canonical honest before the app mounts: a destination page
-      // (/?url=YY.net) is its own page, not a duplicate of the home page.
+      // (/YY.net or /?url=YY.net) is its own page, not a duplicate of the home page.
       (function () {
         try {
           var canonical = document.querySelector('link[rel="canonical"]');
           var ogUrl = document.querySelector('meta[property="og:url"]');
           var href = location.origin + "/";
-          var target = new URLSearchParams(location.search).get("url");
+          
+          // Check for path-based URL (/example.com) or query-based URL (/?url=example.com)
+          var target = null;
+          var pathSegments = location.pathname.split("/").filter(Boolean);
+          if (pathSegments.length > 0) {
+            var last = pathSegments[pathSegments.length - 1];
+            if (/\./.test(last) || /%/.test(last)) {
+              target = decodeURIComponent(last).replace(/^https?:\/\//i, "");
+            }
+          }
+          if (!target) {
+            target = new URLSearchParams(location.search).get("url");
+          }
+          
           if (target) {
             var bare = target.replace(/^https?:\/\//i, "").replace(/\/$/, "");
-            if (/\./.test(bare)) href = location.origin + "/?url=" + encodeURIComponent(bare);
+            if (/\./.test(bare)) href = location.origin + "/" + encodeURIComponent(bare);
           }
+          
           if (canonical) canonical.setAttribute("href", href);
           if (ogUrl) ogUrl.setAttribute("content", href);
         } catch (e) {}
