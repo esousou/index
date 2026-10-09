@@ -16,6 +16,7 @@ import {
 } from "./lib/links";
 import {
   canonicalFor,
+  canonicalizeAddress,
   goToError,
   homeUrl,
   prettyRoute,
@@ -169,7 +170,12 @@ export default function App() {
 
   /* ---------- routing: /YY.net, navigated without a reload ---------- */
   useEffect(() => {
+    // A host fallback may arrive as /?url=YY.net/path; put the typed path back
+    // into the address bar before anything else looks at the route.
+    canonicalizeAddress();
+    setRoute(readRoute());
     const sync = () => {
+      canonicalizeAddress();
       setRoute(readRoute());
       window.scrollTo({ top: 0 });
     };
