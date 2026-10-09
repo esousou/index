@@ -9,6 +9,8 @@ export interface LinkRecord {
   createdAt: number;
   rev: number; // last edit, decides conflict winners
   opens: number;
+  /** Per-peer G-counter. Merged component-wise to form the global open total. */
+  openCounts?: Record<string, number>;
   origin: LinkOrigin;
   author: string; // short wallet signature
   lang: string;
@@ -38,13 +40,16 @@ export function normalizeLink(raw: string): NormResult {
   }
 
   if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return { ok: false, reason: "bad" };
+  // Path routes intentionally omit the protocol. Keep their destination
+  // unambiguous and secure by publishing the canonical HTTPS form.
+  if (parsed.protocol === "http:") parsed.protocol = "https:";
   const host = parsed.hostname;
   if (!host || host.includes(" ") || !HOST_RE.test(host)) return { ok: false, reason: "bad" };
   if (host.length < 3) return { ok: false, reason: "bad" };
 
   parsed.hash = "";
-  // Drop trailing slashes on the path so the stored address is exactly the one
-  // the ?url= route reconstructs (https://a.com/x/ and https://a.com/x are one link).
+  // Drop trailing slashes on the path so path routes identify one destination
+  // (https://a.com/x/ and https://a.com/x are one link).
   parsed.pathname = parsed.pathname.replace(/\/+$/, "") || "/";
   const href = parsed.toString();
   if (href.length > 512) return { ok: false, reason: "bad" };
@@ -53,7 +58,14 @@ export function normalizeLink(raw: string): NormResult {
 
 /** Identity of a link, shared by the store, the route and the destination page. */
 export function linkKey(url: string): string {
-  return stripScheme(url).toLowerCase();
+  try {
+    const u = new URL(/^[a-z][a-z0-9+.-]*:\/\//i.test(url) ? url : `https://${url}`);
+    const path = u.pathname.replace(/\/+$/, "") || "/";
+    // Host names are case-insensitive; paths and query values are not.
+    return `${u.host.toLowerCase()}${path === "/" ? "" : path}${u.search}`;
+  } catch {
+    return stripScheme(url);
+  }
 }
 
 /** Ownership is decided by the author's signature, never by a shared flag. */
@@ -98,6 +110,7 @@ export function makeLink(input: {
     createdAt: now,
     rev: now,
     opens: 0,
+    openCounts: {},
     origin: input.origin,
     author: input.author,
     lang: input.lang,
@@ -113,14 +126,37 @@ export function prettifyHost(href: string) {
   }
 }
 
-/** Conflict-free merge: highest opens wins, earliest creation wins, newest edit names it. */
+function counterOf(link: LinkRecord): Record<string, number> {
+  // Links created by older clients had only `opens`; preserve their total as a
+  // distinct immutable component instead of losing it during the first merge.
+  if (link.openCounts && Object.keys(link.openCounts).length > 0) return link.openCounts;
+  return link.opens > 0 ? { legacy: link.opens } : {};
+}
+
+export function totalOpens(link: Pick<LinkRecord, "opens" | "openCounts">): number {
+  const counts = link.openCounts;
+  if (!counts || Object.keys(counts).length === 0) return link.opens;
+  return Object.values(counts).reduce((sum, n) => sum + Math.max(0, n || 0), 0);
+}
+
+export function mergeOpenCounts(a: LinkRecord, b: LinkRecord): Record<string, number> {
+  const merged: Record<string, number> = { ...counterOf(a) };
+  for (const [peer, count] of Object.entries(counterOf(b))) {
+    merged[peer] = Math.max(merged[peer] ?? 0, count);
+  }
+  return merged;
+}
+
+/** Conflict-free merge: G-counter opens, earliest creation, newest metadata. */
 export function mergeLink(a: LinkRecord, b: LinkRecord): LinkRecord {
   const newer = a.rev >= b.rev ? a : b;
   const older = newer === a ? b : a;
+  const openCounts = mergeOpenCounts(a, b);
   return {
     ...newer,
     createdAt: Math.min(a.createdAt, b.createdAt),
-    opens: Math.max(a.opens, b.opens),
+    openCounts,
+    opens: totalOpens({ opens: 0, openCounts }),
     rev: Math.max(a.rev, b.rev),
     title: newer.title || older.title,
     expiresAt: Math.max(a.expiresAt, b.expiresAt),
