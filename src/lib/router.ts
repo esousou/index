@@ -84,18 +84,30 @@ function isHostSegment(segment: string) {
   return decoded === "localhost" || decoded.includes(".");
 }
 
-/** App directory before a destination host segment. */
-function rootPath(pathname: string) {
+/**
+ * Split a pathname into the app root and the destination path after it.
+ * On the root deploy the first segment is already the destination; earlier
+ * segments are only treated as app root when a host-like segment follows.
+ */
+function splitLocation(pathname: string) {
   const segments = pathname.replace(/index\.html?$/i, "").split("/").filter(Boolean);
   const destinationAt = segments.findIndex(isHostSegment);
-  const appSegments = destinationAt >= 0 ? segments.slice(0, destinationAt) : segments;
-  return appSegments.length ? `/${appSegments.join("/")}/` : "/";
+  if (destinationAt > 0) {
+    return {
+      root: `/${segments.slice(0, destinationAt).join("/")}/`,
+      rest: segments.slice(destinationAt).join("/"),
+    };
+  }
+  return { root: "/", rest: segments.join("/") };
+}
+
+/** App directory before a destination host segment. */
+function rootPath(pathname: string) {
+  return splitLocation(pathname).root;
 }
 
 function pathAfterRoot(pathname: string) {
-  const segments = pathname.replace(/index\.html?$/i, "").split("/").filter(Boolean);
-  const destinationAt = segments.findIndex(isHostSegment);
-  return destinationAt >= 0 ? segments.slice(destinationAt).join("/") : "";
+  return splitLocation(pathname).rest;
 }
 
 let virtual: LocationState | null = null;
@@ -201,7 +213,33 @@ function safeDecode(value: string) {
   }
 }
 
-/** Query routes remain supported for existing shared links. */
+/**
+ * A fallback host may hand the app /?url=YY.net/path instead of the typed path.
+ * Put the address back into its preferred path form once the app is running, so
+ * the bar ends up showing exactly /YY.net/path. Error routes keep the query form.
+ */
+export function canonicalizeAddress() {
+  const loc = activeLocation();
+  const params = paramsFrom(loc.search);
+  const target = params.get(URL_PARAM);
+  if (target === null) return;
+
+  if (classify(target).name !== "go") return;
+
+  const lang = params.get(LANG_PARAM);
+  const raw = target.replace(/^https?:\/\//i, "");
+  const trailing = /\/$/.test(raw) ? "/" : "";
+  write(
+    {
+      ...loc,
+      pathname: `${rootPath(loc.pathname)}${encodeRoutePath(raw)}${trailing}`,
+      search: lang ? `?${LANG_PARAM}=${encodeURIComponent(lang)}` : "",
+      hash: "",
+    },
+    "replace",
+  );
+}
+
 export function readRoute(): Route {
   const loc = activeLocation();
   const target = paramsFrom(loc.search).get(URL_PARAM);
