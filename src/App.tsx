@@ -3,7 +3,7 @@ import { Ambient, Footer, Header, Micro, ScrollRule, Toasts, WalletBar, useToast
 import { LinkColumns } from "./components/LinkColumns";
 import { LinkForm } from "./components/LinkForm";
 import { ErrorPage, GoPage, HelpSheet } from "./components/Pages";
-import { IconCoin, IconHourglass, IconLink, IconUsers } from "./components/Icons";
+import { IconCoin, IconEye, IconGlobe, IconHourglass, IconLink, IconUsers } from "./components/Icons";
 import { detectLang, LANGS, translate, type Key, type LangCode } from "./i18n";
 import {
   isOwn,
@@ -556,6 +556,45 @@ export default function App() {
                     </span>
                   ))}
                 </p>
+              </div>
+            </div>
+          </section>
+
+          {/* Global network statistics */}
+          <section className="border-y hairline bg-paper-2/40 px-4 py-5 sm:px-8">
+            <div className="mx-auto grid w-full max-w-6xl gap-4 sm:grid-cols-3 sm:gap-8">
+              <div className="flex items-center gap-3">
+                <span className="grid h-10 w-10 place-items-center rounded-full border hairline text-sage">
+                  <IconLink size={18} />
+                </span>
+                <div>
+                  <p className="font-display text-2xl leading-none tabular-nums">
+                    {snapshot.all.length}
+                  </p>
+                  <Micro>{t("stats.networkLinks")}</Micro>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="grid h-10 w-10 place-items-center rounded-full border hairline text-sage">
+                  <IconEye size={18} />
+                </span>
+                <div>
+                  <p className="font-display text-2xl leading-none tabular-nums">
+                    {totalOpens}
+                  </p>
+                  <Micro>{t("stats.networkOpens")}</Micro>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="grid h-10 w-10 place-items-center rounded-full border hairline text-sage">
+                  <IconGlobe size={18} />
+                </span>
+                <div>
+                  <p className="font-display text-2xl leading-none tabular-nums">
+                    {meshState.peers.length + 1}
+                  </p>
+                  <Micro>{t("stats.networkPeers")}</Micro>
+                </div>
               </div>
             </div>
           </section>
