@@ -95,11 +95,16 @@
           // Check for path-based URL (/example.com) or query-based URL (/?url=example.com)
           var target = null;
           var pathSegments = location.pathname.split("/").filter(Boolean);
-          if (pathSegments.length > 0) {
-            var last = pathSegments[pathSegments.length - 1];
-            if (/\./.test(last) || /%/.test(last)) {
-              target = decodeURIComponent(last).replace(/^https?:\/\//i, "");
+          var hostAt = -1;
+          for (var i = 0; i < pathSegments.length; i++) {
+            var segment = decodeURIComponent(pathSegments[i]);
+            if (segment === "localhost" || /\./.test(segment)) {
+              hostAt = i;
+              break;
             }
+          }
+          if (hostAt >= 0) {
+            target = decodeURIComponent(pathSegments.slice(hostAt).join("/")).replace(/^https?:\/\//i, "");
           }
           if (!target) {
             target = new URLSearchParams(location.search).get("url");
@@ -139,7 +144,7 @@
         <p>
           Publishing costs <em>index</em>, one per character of the address; one index is earned for
           every ten seconds spent on the site while connected to the internet. Opening a listed link
-          leads to a page of the form <code>/?url=example.com</code>, which prints the destination as
+          leads to a page of the form <code>/example.com</code>, which prints the destination as
           a plain link and never forwards you by itself.
         </p>
         <p>
