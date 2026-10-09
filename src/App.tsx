@@ -167,7 +167,7 @@ export default function App() {
     });
   }, [route, lang, t, snapshot.all]);
 
-  /* ---------- routing: ?url=YY.net, navigated without a reload ---------- */
+  /* ---------- routing: /YY.net, navigated without a reload ---------- */
   useEffect(() => {
     const sync = () => {
       setRoute(readRoute());
@@ -180,9 +180,9 @@ export default function App() {
   /* ---------- fold incoming links in, and say so when the network speaks ---------- */
   const ingest = useCallback(
     (list: LinkRecord[]) => {
-      const known = new Set(linkStore.getSnapshot().all.map((l) => l.url));
+      const known = new Set(linkStore.getSnapshot().all.map((l) => linkKey(l.url)));
       linkStore.mergeMany(list);
-      const fresh = linkStore.getSnapshot().all.filter((l) => !known.has(l.url)).length;
+      const fresh = linkStore.getSnapshot().all.filter((l) => !known.has(linkKey(l.url))).length;
       if (fresh > 0) {
         setPulse(Date.now());
         push(t("toast.network", { n: fresh }));
@@ -267,7 +267,7 @@ export default function App() {
   /* ---------- tab-to-tab bus ---------- */
   useEffect(() => {
     if (typeof BroadcastChannel === "undefined") return;
-    const ch = new BroadcastChannel("index.commons.v1");
+    const ch = new BroadcastChannel("index-z.commons.v1");
     ch.onmessage = (e: MessageEvent) => {
       const msg = e.data as {
         t: string;
@@ -351,7 +351,7 @@ export default function App() {
     };
   }, [t, push]);
 
-  /* ---------- count an open when ?url= is reached ---------- */
+  /* ---------- count an open when a destination route is reached ---------- */
   // After a full-page arrival (e.g. top-level navigation from a frame) the ledger
   // is empty until peers sync, so wait for the record to exist before counting.
   const goKnown =
@@ -367,13 +367,13 @@ export default function App() {
     } catch {
       /* storage blocked — count it anyway, it is only a tally */
     }
-    linkStore.bump(route.href, 1);
+    linkStore.bump(route.href, me);
     const record = linkStore.byUrl(route.href);
     if (record) {
       meshRef.current?.broadcastLink(record);
       busRef.current?.postMessage({ t: "link", link: record });
     }
-  }, [route, goKnown]);
+  }, [route, goKnown, me]);
 
   /* ---------- actions ---------- */
   const handleAdd = useCallback(
