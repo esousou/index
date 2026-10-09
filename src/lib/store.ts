@@ -1,4 +1,4 @@
-import { isExpired, linkKey, mergeLink, type LinkRecord } from "./links";
+import { isExpired, linkKey, mergeLink, totalOpens, type LinkRecord } from "./links";
 
 type Listener = () => void;
 
@@ -8,6 +8,14 @@ export interface LinkSnapshot {
 }
 
 const CAP = 300;
+
+function sameCounts(a: LinkRecord, b: LinkRecord) {
+  const ac = a.openCounts ?? {};
+  const bc = b.openCounts ?? {};
+  const keys = new Set([...Object.keys(ac), ...Object.keys(bc)]);
+  for (const key of keys) if ((ac[key] ?? 0) !== (bc[key] ?? 0)) return false;
+  return true;
+}
 
 /**
  * The only place links live: a Map in this tab's memory, filled and kept
@@ -82,8 +90,11 @@ class LinkStore {
       if (incoming.removed) {
         // Tombstones match by id only: the same address may later be re-published under a new id.
         const held = this.map.get(incoming.id);
-        this.map.set(incoming.id, held ? mergeLink(held, incoming) : incoming);
-        changed = true;
+        const next = held ? mergeLink(held, incoming) : incoming;
+        if (!held || held.rev !== next.rev || held.removed !== next.removed || !sameCounts(held, next)) {
+          this.map.set(incoming.id, next);
+          changed = true;
+        }
         continue;
       }
 
@@ -99,7 +110,8 @@ class LinkStore {
         existing.title !== incoming.title ||
         existing.rev !== incoming.rev ||
         existing.expiresAt !== incoming.expiresAt ||
-        existing.removed !== incoming.removed
+        existing.removed !== incoming.removed ||
+        !sameCounts(existing, incoming)
       ) {
         this.map.set(existing.id, mergeLink(existing, incoming));
         changed = true;
@@ -108,10 +120,19 @@ class LinkStore {
     if (changed) this.emit();
   }
 
-  bump(href: string, by = 1) {
+  bump(href: string, peerId: string, by = 1) {
     const found = this.byUrl(href);
     if (!found) return;
-    this.map.set(found.id, { ...found, opens: found.opens + by, rev: Date.now() });
+    const openCounts = { ...(found.openCounts ?? {}) };
+    // Fold an older aggregate into its own component before adding this peer's open.
+    if (Object.keys(openCounts).length === 0 && found.opens > 0) openCounts.legacy = found.opens;
+    openCounts[peerId] = (openCounts[peerId] ?? 0) + by;
+    this.map.set(found.id, {
+      ...found,
+      openCounts,
+      opens: totalOpens({ opens: 0, openCounts }),
+      rev: Date.now(),
+    });
     this.emit();
   }
 
