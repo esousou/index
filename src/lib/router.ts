@@ -201,9 +201,12 @@ function buildUrl(params: Record<string, string>) {
   return `${publicBase()}${qs ? `?${qs}` : ""}`;
 }
 
-/** https://index-z.pages.dev/?url=YY.net — absolute, so it is right from any frame. */
+/** https://index-z.pages.dev/YY.net — absolute, so it is right from any frame. */
 export function routeToLink(target: string) {
-  return buildUrl({ [URL_PARAM]: stripScheme(target) });
+  const bare = stripScheme(target);
+  const lang = langParam();
+  const qs = lang ? `?${LANG_PARAM}=${encodeURIComponent(lang)}` : "";
+  return `${publicBase()}${encodeURIComponent(bare)}${qs}`;
 }
 
 /** The shareable address of a destination page (same as routeToLink). */
@@ -218,8 +221,8 @@ export function homeUrl() {
 /** Canonical address of a view — lang stripped, alternates carry it. */
 export function canonicalFor(route: Route) {
   const base = publicBase();
-  if (route.name === "go") return `${base}?${URL_PARAM}=${encodeURIComponent(stripScheme(route.href))}`;
-  if (route.name === "error") return `${base}?${URL_PARAM}=${encodeURIComponent(route.value)}`;
+  if (route.name === "go") return `${base}${encodeURIComponent(stripScheme(route.href))}`;
+  if (route.name === "error") return `${base}${encodeURIComponent(route.value)}`;
   return base;
 }
 
