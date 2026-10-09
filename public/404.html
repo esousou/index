@@ -14,17 +14,36 @@
     </style>
     <script>
       /*
-        A visitor typed index-z.pages.dev/YY.net straight into the bar and the host had no
-        such document. Rewrite it to the one real page, index-z.pages.dev/?url=YY.net,
-        before anything is painted.
+        A visitor typed index-z.pages.dev/YY.net/path straight into the bar and the host
+        served no document for it. Carry the ENTIRE destination path into the app
+        before anything is painted — never just the last segment. The app then puts
+        the address back into its path form, so the bar ends up showing /YY.net/path.
       */
       (function () {
         try {
           var segments = window.location.pathname.split("/").filter(Boolean);
-          var last = segments.pop() || "";
-          var dir = "/" + (segments.length ? segments.join("/") + "/" : "");
-          var target = decodeURIComponent(last).replace(/^https?:\/\//i, "");
-          window.location.replace(target ? dir + "?url=" + encodeURIComponent(target) : dir);
+          var hostAt = -1;
+          for (var i = 0; i < segments.length; i++) {
+            var part = decodeURIComponent(segments[i]);
+            if (part === "localhost" || /\./.test(part)) {
+              hostAt = i;
+              break;
+            }
+          }
+
+          var search = new URLSearchParams(window.location.search);
+          var lang = search.get("lang");
+          if (hostAt < 0) {
+            window.location.replace("/" + (lang ? "?lang=" + encodeURIComponent(lang) : ""));
+            return;
+          }
+
+          var trailing = /\/$/.test(window.location.pathname) ? "/" : "";
+          var target =
+            decodeURIComponent(segments.slice(hostAt).join("/")).replace(/^https?:\/\//i, "") + trailing;
+          search.set("url", target);
+          if (lang) search.set("lang", lang);
+          window.location.replace("/?" + search.toString());
         } catch (e) {
           window.location.replace("/");
         }
